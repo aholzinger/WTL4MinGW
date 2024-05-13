@@ -357,14 +357,10 @@ do {																		\
 // -------------------------------------------------------------------------
 // WINX_BREAK
 
-#ifdef _MSC_VER
-#define WINX_BREAK()			_CrtDbgBreak()
-#else
 #if defined(_CrtDbgBreak)
 #define WINX_BREAK()			_CrtDbgBreak()
 #else
 #define WINX_BREAK()			__asm { int 3 }
-#endif
 #endif
 
 // -------------------------------------------------------------------------
