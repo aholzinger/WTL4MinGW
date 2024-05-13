@@ -26,6 +26,7 @@
 #include <windows.h>
 #include <winnls.h>
 #include <ole2.h>
+#include <guiddef.h>
 
 #ifndef __ATLCONV_H__
 #include "atlconv.h"
@@ -668,15 +669,6 @@ ATLAPI AtlModuleAddTermFunc(_ATL_MODULE* pM, _ATL_TERMFUNC* pFunc, DWORD dw);
 /////////////////////////////////////////////////////////////////////////////
 // GUID comparison
 
-inline BOOL InlineIsEqualGUID(REFGUID rguid1, REFGUID rguid2)
-{
-   return (
-	  ((PLONG) &rguid1)[0] == ((PLONG) &rguid2)[0] &&
-	  ((PLONG) &rguid1)[1] == ((PLONG) &rguid2)[1] &&
-	  ((PLONG) &rguid1)[2] == ((PLONG) &rguid2)[2] &&
-	  ((PLONG) &rguid1)[3] == ((PLONG) &rguid2)[3]);
-}
-
 inline BOOL InlineIsEqualUnknown(REFGUID rguid1)
 {
    return (
@@ -705,7 +697,7 @@ ATLINLINE ATLAPI AtlInternalQueryInterface(void* pThis,
 	*ppvObject = NULL;
 	if (InlineIsEqualUnknown(iid)) // use first interface
 	{
-			IUnknown* pUnk = (IUnknown*)((int)pThis+pEntries->dw);
+			IUnknown* pUnk = (IUnknown*)((INT_PTR)pThis+pEntries->dw);
 			pUnk->AddRef();
 			*ppvObject = pUnk;
 			return S_OK;
@@ -718,7 +710,7 @@ ATLINLINE ATLAPI AtlInternalQueryInterface(void* pThis,
 			if (pEntries->pFunc == _ATL_SIMPLEMAPENTRY) //offset
 			{
 				ATLASSERT(!bBlind);
-				IUnknown* pUnk = (IUnknown*)((int)pThis+pEntries->dw);
+				IUnknown* pUnk = (IUnknown*)((INT_PTR)pThis+pEntries->dw);
 				pUnk->AddRef();
 				*ppvObject = pUnk;
 				return S_OK;
@@ -1337,7 +1329,7 @@ ATLINLINE ATLAPI AtlSetErrorInfo(const CLSID& clsid, LPCOLESTR lpszDesc, DWORD d
 	// For a valid HRESULT the id should be in the range [0x0200, 0xffff]
 	if (HIWORD(lpszDesc) == 0) //id
 	{
-		UINT nID = LOWORD((DWORD)lpszDesc);
+		UINT nID = LOWORD((DWORD_PTR)lpszDesc);
 		ATLASSERT((nID >= 0x0200 && nID <= 0xffff) || hRes != 0);
 		if (LoadString(hInst, nID, szDesc, 1024) == 0)
 		{

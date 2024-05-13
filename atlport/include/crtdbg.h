@@ -530,7 +530,7 @@ inline void __cdecl operator delete(void * _P, int, const char *, int)
  ***************************************************************************/
 
 _CRTIMP void * __cdecl operator new(
-        unsigned int,
+        size_t,
         int,
         const char *,
         int
@@ -544,7 +544,7 @@ inline void __cdecl operator delete(void * _P, int, const char *, int)
 
 #ifdef _CRTDBG_MAP_ALLOC
 
-inline void* __cdecl operator new(unsigned int s)
+inline void* __cdecl operator new(size_t s)
         { return ::operator new(s, _NORMAL_BLOCK, __FILE__, __LINE__); }
 
 #endif  /* _CRTDBG_MAP_ALLOC */
