@@ -1,6 +1,28 @@
 cmake_minimum_required(VERSION 3.20.0)
 
+set(WTL4MINGW_USE_DEBUGBREAK_REPO "https://github.com/scottt/debugbreak.git" CACHE STRING "debugbreak repository to use")
+if(NOT WTL4MINGW_USE_DEBUGBREAK_TAG)
+    if($ENV{WTL4MINGW_USE_DEBUGBREAK_TAG})
+        set(WTL4MINGW_USE_DEBUGBREAK_TAG $ENV{WTL4MINGW_USE_DEBUGBREAK_TAG})
+    else()
+        set(WTL4MINGW_USE_DEBUGBREAK_TAG "5dcbe41d2bd4712c8014aa7e843723ad7b40fd74")   # set default tag, when neither cache nor environment variable found.
+    endif()
+endif()
+
+FetchContent_Declare(debugbreak_build
+    GIT_TAG         ${WTL4MINGW_USE_DEBUGBREAK_TAG}
+    GIT_REPOSITORY  ${WTL4MINGW_USE_DEBUGBREAK_REPO}
+)
+message(STATUS "Fetching debugbreak sources ${WTL4MINGW_USE_DEBUGBREAK_TAG} from git at ${WTL4MINGW_USE_DEBUGBREAK_REPO}")
+FetchContent_GetProperties(debugbreak_build)
+if(NOT debugbreak_build_POPULATED)
+    FetchContent_Populate(debugbreak_build)
+    message(STATUS "Building debugbreak in ${debugbreak_build_BINARY_DIR} from sources in ${debugbreak_build_SOURCE_DIR}")
+    add_subdirectory(${debugbreak_build_SOURCE_DIR} ${debugbreak_build_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
 include_directories(
+    ${debugbreak_build_SOURCE_DIR}
     atlport/include
     stdext/include
     wtl/include
